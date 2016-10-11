@@ -22,7 +22,7 @@ def show_dr(method, components, file_name, kernel="poly"):
     if method == "pca":
         method_obj = PCA(n_components=components)
     elif method == "kpca":
-        method_obj = KernelPCA(degree=5, n_components=components, kernel=kernel)
+        method_obj = KernelPCA(n_components=components, kernel=kernel)
     elif method == "isomap":
         method_obj = Isomap(n_components=components)
     else:
@@ -39,12 +39,26 @@ def show_dr(method, components, file_name, kernel="poly"):
     else:
         plot(xs, result[:, 1], result[:, 2])
 
-show_dr("kpca", 2, "helix.mat")
-'''
-np_data = parse_matlab("swissroll.mat")
-result = PCA(n_components=3).fit_transform(np_data)
-xs = result[:, 0]
-n = len(xs)
-zeros = np.zeros(n)
-plot(xs, result[:, 1], result[:, 2])
-'''
+# show_dr("kpca", 2, "helix.mat", kernel="rbf")
+
+
+def get_mv_dataset(pcnt):
+    filenames = ["swissroll.mat", "brokenswissroll.mat", "helix.mat", "intersect.mat"]
+    datasets = []
+    missung_number = 3000/pcnt
+    for filename in filenames:
+        np_data = parse_matlab(filename)
+        indexes = np.random.randint(3000, size=missung_number)
+        for i in indexes:
+            randvar = np.random.randint(3)
+            np_data[i][randvar] = np.nan
+        datasets.append(np_data)
+    return datasets
+
+
+def get_all_ms_datasets():
+    all_dss = []
+    for pcnt in [10, 20, 30, 40, 50]:
+        all_dss.append(get_mv_dataset(pcnt))
+
+
